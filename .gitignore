@@ -1,0 +1,15 @@
+#Virtual Environment
+.venv/
+
+#Python cache
+__pycache__/
+*.pyc
+
+#Large datasets
+data/raw/*.csv
+
+#Processed data
+data/processed/
+
+#IDE files
+.idea/
