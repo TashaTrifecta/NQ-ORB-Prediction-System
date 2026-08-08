@@ -50,6 +50,8 @@ def data_processing(filename ):
     # print(f"Weekday with the Largest Average ORB: {weekday_stats.idxmax()}")
     # print(f"Weekday with the Smallest Average ORB: {weekday_stats.idxmin()}")
 
+
+
     #Date with the Largest ORB
     largest_orb = orb_daily.loc[orb_daily["orb_range"].idxmax()]
     # print(f"Date with the Largest ORB: {largest_orb["date"]}")
@@ -85,9 +87,36 @@ def data_processing(filename ):
     weekday_stats = weekday_stats.sort_values(by="weekday")
 
     #Create Chart x= x-axis which is the Weekday  y= y-axis which is the ORB Range
-    fig = px.bar(weekday_stats, x="weekday", y="orb_range", title="Average ORB Range by Weekday", labels={"weekday":"Weekday", "orb_range":"Average ORB Range (in Points)"})
-    fig.update_traces(hovertemplate="<b>%{x}</b><br>" + "Average ORB: %{y:.2f} points")
-    fig.show()
+    # fig = px.bar(weekday_stats, x="weekday", y="orb_range", title="Average ORB Range by Weekday", labels={"weekday":"Weekday", "orb_range":"Average ORB Range (in Points)"})
+    # fig.update_traces(hovertemplate="<b>%{x}</b><br>" + "Average ORB: %{y:.2f} points")
+    # fig.show()
+    #
+
+    #Create Histogram showing average size of ORB ranges and amount of times they happened
+    # fig_history =px.histogram(orb_daily, x= "orb_range",  title="Frequencies of 5-Minute ORB Ranges" , labels={"orb_range": "ORB Range (Points)"})
+    # fig_history.update_yaxes(title="Number of Days")
+    # fig_history.update_traces(hovertemplate="ORB Range: %{x}<br>" + "Number of Days: %{y}")
+    # fig_history.show()
+
+
+    #Make Monthly Stats it Data Frame Not a Series
+    #Create a Month Column to determine average ORB range by Month
+    orb_daily["month"] = pd.to_datetime(orb_daily["date"]).dt.month_name() #Create Month column frm Date
+    month_stats = (orb_daily.groupby(["month", "weekday"], as_index=False)["orb_range"].mean()) #Group by Month and Weekday
+    month_stats["orb_range"] = month_stats["orb_range"].round(2)  #Calculate Average ORB
+    month_order = ["January", "February", "March","April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    #Sort in Order (JAN --> DEC and MON --> FRI)
+    month_stats["month"] = pd.Categorical(month_stats["month"], categories=month_order, ordered=True)
+    month_stats["weekday"] = pd.Categorical(month_stats["weekday"], categories=weekday_order, ordered=True)
+    month_stats = month_stats.sort_values(by=["month", "weekday"])   #Sort Everything
+    # print(month_stats)
+
+    # Create Heatmap
+    heatmap = month_stats.pivot( index="month", columns="weekday", values="orb_range")
+    # print(heatmap)
+    fig_heatmap = px.imshow(heatmap, title="Average 5-Minute ORB Range by Month and Day", labels={"x": "Weekday", "y": "Month", "color": "Average ORB (Points)"}, text_auto=True)   #imshow Plots the Matrix as an image where the Values determine the Colors
+    fig_heatmap.show()
+
 
     # print(type(weekday_stats))
     # print(weekday_stats)
