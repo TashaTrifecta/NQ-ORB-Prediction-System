@@ -24,7 +24,8 @@ data_file = project_root / "data" / "raw" / "Dataset_NQ_1min_2022_2025.csv"
 @st.cache_data
 def load_data(filename):
     return data_processing(filename)
-@st.cache_data
+
+@st.cache_resource
 def load_model(filename):
     return machine_learning(filename)
 
@@ -33,14 +34,15 @@ rf_model = load_model(data_file)
 
 orb_daily["date"] = pd.to_datetime(orb_daily["date"])
 filtered_orb_daily = orb_daily.copy()
-filtered_orb_daily["weekday"] = (filtered_orb_daily["date"].dt.day_name())
-filtered_orb_daily["month"] = (filtered_orb_daily["date"].dt.month_name())
+filtered_orb_daily["weekday"] = filtered_orb_daily["date"].dt.day_name()
+filtered_orb_daily["month"] = filtered_orb_daily["date"].dt.month_name()
 
 if year != "All":
     filtered_orb_daily = filtered_orb_daily[filtered_orb_daily["date"].dt.year == year]
 if month != "All":
     filtered_orb_daily = filtered_orb_daily[filtered_orb_daily["date"].dt.month_name() == month]
 
+#Calculate historical ORB summary statistics
 st.subheader("Historical ORB Summary")
 total_sessions = len(filtered_orb_daily)
 total_trades = filtered_orb_daily["trade_outcome"].notna().sum()
@@ -48,6 +50,7 @@ resolved_trades = filtered_orb_daily[filtered_orb_daily["trade_outcome"].isin(["
 total_resolved = len(resolved_trades)
 total_wins = (filtered_orb_daily["trade_outcome"]== "WIN").sum()
 total_losses = (filtered_orb_daily["trade_outcome"]== "LOSS").sum()
+
 if total_resolved > 0:
     win_rate = float((total_wins / total_resolved) * 100)
 else:
@@ -102,8 +105,8 @@ if st.button("Predict the Trade Outcome"):
         "for decision support only. It does not guarantee future trading outcomes."
     )
 
+#Show Visualizations created in charts.py
 st.subheader("ORB Visual Analysis")
-
 win_rate_chart = create_win_rate_chart(filtered_orb_daily)
 st.plotly_chart(win_rate_chart,  width="stretch")
 

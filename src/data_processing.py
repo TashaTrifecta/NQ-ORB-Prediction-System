@@ -1,5 +1,3 @@
-from fileinput import close
-
 import pandas as pd
 from datetime import time
 
@@ -64,7 +62,6 @@ def data_processing(filename):
     break_times.loc[break_times["first_high_break"].notna() & break_times["first_low_break"].notna() & (break_times["first_high_break"] < break_times["first_low_break"]), "first_break"] = "HIGH" #Both broke but High broke first
     break_times.loc[break_times["first_high_break"].notna() & break_times["first_low_break"].notna() & (break_times["first_low_break"] < break_times["first_high_break"]), "first_break"] = "LOW"  #Both broke but Low broke first
     break_times.loc[break_times["first_high_break"].notna() & break_times["first_low_break"].notna() &(break_times["first_high_break"] == break_times["first_low_break"]),"first_break"] = "AMBIGUOUS" #Both broke during the same 1-minute candle
-    break_percentages = (break_times["first_break"].value_counts(normalize=True).mul(100).round(2))
     break_times = break_times.reset_index() #turns the index into a normal column
 
     #Merge Daily ORB with the Outcome of the first break times and ORB Features
@@ -89,7 +86,6 @@ def data_processing(filename):
     first_entries["entry_price"] = first_entries["close"]
     first_entries["take_profit"] = 0.0
     first_entries["stop_loss"] = 0.0
-
 
     #Long(Buys)
     first_entries.loc[first_entries["first_break"] == "HIGH", "take_profit"] = (first_entries["entry_price"] + first_entries["orb_range"] * tp_multiplier)
@@ -136,62 +132,10 @@ def data_processing(filename):
     orb_daily_merged = orb_daily_merged.merge(outcome_times[["date", "trade_outcome"]], on="date", how="left")
     # Merge ATR at trade entry into daily ORB dataset
     orb_daily_merged = orb_daily_merged.merge(first_entries[["date", "atr_14"]],on="date",how="left")
-    # print(orb_daily_merged[["date", "orb_direction", "orb_range", "orb_volume", "first_break", "trade_outcome"]].head(20))
-    # print(outcome_times.head(15))
-    # print(outcome_times["trade_outcome"].value_counts())
-    # print(outcome_times["trade_outcome"].value_counts())
+
+    #Data Validation: total entries should match total outcomes
     # print("Total Entries: ", len(first_entries))
     # print("Total Outcomes: ", len(outcome_times))
 
-    entered_dates = set(first_entries["date"])
-    missing_trade_outcome = orb_daily_merged[orb_daily_merged["date"].isin(entered_dates) &orb_daily_merged["trade_outcome"].isna()]
-
-    # print(
-    #     df[
-    #         [
-    #             "timestamp ET",
-    #             "high",
-    #             "low",
-    #             "close",
-    #             "prev_close",
-    #             "true_range",
-    #             "atr_14"
-    #         ]
-    #     ].head(20)
-    # )
-
-    # print(
-    #     first_entries[
-    #         [
-    #             "date",
-    #             "entry_time",
-    #             "first_break",
-    #             "entry_price",
-    #             "atr_14"
-    #         ]
-    #     ].head(10)
-    # )
-
-    # print(
-    #     orb_daily_merged[
-    #         [
-    #             "date",
-    #             "orb_direction",
-    #             "orb_range",
-    #             "orb_volume",
-    #             "first_break",
-    #             "atr_14",
-    #             "trade_outcome"
-    #         ]
-    #     ].head(20)
-    # )
-
-    #Create a Weekday Column to determine average ORB range by Weekday
-    orb_daily["weekday"] = pd.to_datetime(orb_daily["date"]).dt.day_name()
-
-    #Create a Month Column to determine average ORB range by Month
-    orb_daily["month"] = pd.to_datetime(orb_daily["date"]).dt.month_name()  #Create Month column from Date
-    percentages = orb_daily["orb_direction"].value_counts(normalize=True).mul(100).round(2)
-
-    #Return orb_daily
+    #Return processed daily ORB dataset
     return orb_daily_merged
