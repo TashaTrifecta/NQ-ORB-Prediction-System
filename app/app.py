@@ -59,7 +59,7 @@ else:
 average_orb_range = float(filtered_orb_daily["orb_range"].mean())
 average_atr = float(filtered_orb_daily["atr_14"].mean())
 
-col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
+col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric(label="ORB Sessions", value=total_sessions)
 with col2:
@@ -68,6 +68,8 @@ with col3:
     st.metric(label="Total Wins", value=total_wins)
 with col4:
     st.metric(label="Total Losses", value=total_losses)
+
+col5, col6, col7 = st.columns(3)
 with col5:
     st.metric(label="Win Rate", value=f"{win_rate:.1f}%")
 with col6:
@@ -95,6 +97,7 @@ if st.button("Predict the Trade Outcome"):
     win_probability = probability_map["WIN"]
     loss_probability = probability_map["LOSS"]
     st.write("Predicted Outcome:", prediction)
+
     col1, col2 = st.columns(2)
     with col1:
         st.metric("WIN Probability", f"{win_probability:.1%}")
