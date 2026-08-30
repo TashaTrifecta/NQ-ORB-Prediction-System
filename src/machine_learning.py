@@ -87,8 +87,8 @@ def machine_learning(filename):
     #Random Forrest model achieved 100% training accuracy but only 68.42% testing accuracy(which indicates overfitting)
     #the model memorized patterns in the training data that did not generalize well to unseen sessions
     #the model ranked orb volume as the highest feature importance followed by orb range and orb direction
+    #Balanced is used because the dataset has more LOSS trades than WIN trades. Without balancing, the model predicted LOSS most of the time  class_weight = "balanced"
     rf_model = RandomForestClassifier(n_estimators=200, max_depth=5, min_samples_leaf=10, class_weight="balanced", random_state=42)    #Build 200 Decision Trees 42 is a commonly used seed to make the random operations reproducible
-
     rf_model.fit(X_train, y_train)
     rf_pred = rf_model.predict(X_test)
     rf_accuracy = accuracy_score(y_test, rf_pred)
@@ -99,7 +99,7 @@ def machine_learning(filename):
     # print("Feature Importances: ",rf_model.feature_importances_)
     feature_importance = pd.DataFrame({"feature": X.columns, "importance":rf_model.feature_importances_})
     feature_importance = feature_importance.sort_values("importance", ascending=False)
-    print(feature_importance)
+    # print(feature_importance)
 
     # print(f"Random Forest Accuracy: {rf_accuracy:.2%}")
     # print(f"Random Forest Training Accuracy: {rf_train_accuracy:.2%}")
@@ -143,7 +143,8 @@ def machine_learning(filename):
 
     # print("\nRF Test Prediction Counts:")
     # print(pd.Series(rf_pred).value_counts())
-    #
+
+    # Shows where the model was right and wrong:[[correct LOSS, LOSS predicted as WIN],[WIN predicted as LOSS, correct WIN]]
     # print("\nRandom Forest Confusion Matrix:")
     # print(
     #     confusion_matrix(
@@ -160,3 +161,5 @@ def machine_learning(filename):
     #         labels=["LOSS", "WIN"]
     #     )
     # )
+
+    return rf_model

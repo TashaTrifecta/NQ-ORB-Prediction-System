@@ -1,25 +1,26 @@
 import pandas as pd
 import plotly.express as px
 
+#Create Week Day Bar Chart
 def create_weekday_chart(orb_daily):
     weekday_stats = (orb_daily.groupby("weekday", as_index=False)["orb_range"]).mean()
     weekday_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
     weekday_stats["weekday"] = pd.Categorical(weekday_stats["weekday"], categories=weekday_order, ordered=True)
     weekday_stats = weekday_stats.sort_values(by="weekday")
 
-    #Create Chart x= x-axis which is the Weekday  y= y-axis which is the ORB Range
-    fig = px.bar(weekday_stats, x="weekday", y="orb_range", title="Average ORB Range by Weekday", labels={"weekday":"Weekday", "orb_range":"Average ORB Range (in Points)"}, color_discrete_sequence=["#636EFA"])
+#Create x= x-axis which is the Weekday  y= y-axis which is the ORB Range
+    fig = px.bar(weekday_stats, x="weekday", y="orb_range", title="Average ORB Range by Weekday", labels={"weekday":"Weekday", "orb_range":"Average ORB Range (in Points)"}, color_discrete_sequence=["#0D0887"])
     fig.update_traces(hovertemplate="<b>%{x}</b><br>" + "Average ORB: %{y:.2f} points")
     return fig
 
-    # Create Histogram showing average size of ORB ranges and amount of times they happened
+#Create Histogram showing average size of ORB ranges and amount of times they happened
 def create_orb_histogram(orb_daily):
     fig_histo = px.histogram(orb_daily, x="orb_range", title="Frequencies of 5-Minute ORB Ranges",labels={"orb_range": "ORB Range (Points)"}, color_discrete_sequence=["#AB63FA"])
     fig_histo.update_yaxes(title="Number of Days")
     fig_histo.update_traces(hovertemplate="ORB Range: %{x}<br>" "Number of Days: %{y}")
     return fig_histo
 
-    #Create Heatmap
+#Create Heatmap
 def create_heatmap(orb_daily):
     month_stats = (orb_daily.groupby(["month", "weekday"], as_index=False)["orb_range"].mean())  # Group by Month and Weekday
     month_stats["orb_range"] = month_stats["orb_range"].round(2)  # Calculate Average ORB
@@ -34,3 +35,15 @@ def create_heatmap(orb_daily):
     fig_heatmap = px.imshow(heatmap, title="Average 5-Minute ORB Range by Month and Day", labels={"x": "Weekday", "y": "Month", "color": "Average ORB (Points)"}, text_auto=True, aspect="auto", color_continuous_scale="Plasma")
     fig_heatmap.update_layout(height=700)
     return fig_heatmap
+
+#Create Win Rate Chart
+def create_win_rate_chart(orb_daily):
+    resolved_trades = orb_daily[orb_daily["trade_outcome"].isin(["WIN", "LOSS"])].copy()
+    weekday_stats = (resolved_trades.groupby("weekday")["trade_outcome"].apply(lambda x: (x == "WIN").mean() * 100).reset_index(name="win_rate"))
+    weekday_order = ["Monday","Tuesday","Wednesday","Thursday","Friday"]
+    weekday_stats["weekday"] = pd.Categorical(weekday_stats["weekday"],categories=weekday_order,ordered=True)
+    weekday_stats = weekday_stats.sort_values("weekday")
+
+    fig = px.bar(weekday_stats, x="weekday", y="win_rate",title="ORB Win Rate by Weekday",labels={"weekday": "Weekday","win_rate": "Win Rate (%)"}, color_discrete_sequence=["#AB63FA"])
+    fig.update_traces(hovertemplate="<b>%{x}</b><br>Win Rate: %{y:.1f}%")
+    return fig
