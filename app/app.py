@@ -21,8 +21,15 @@ year = st.sidebar.selectbox("Select Year", ["All", 2022 ,2023, 2024, 2025])
 month = st.sidebar.selectbox("Select Month", ["All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
 
 data_file = project_root / "data" / "raw" / "Dataset_NQ_1min_2022_2025.csv"
-orb_daily = data_processing(data_file)
-rf_model = machine_learning(data_file)
+@st.cache_data
+def load_data(filename):
+    return data_processing(filename)
+@st.cache_data
+def load_model(filename):
+    return machine_learning(filename)
+
+orb_daily = load_data(data_file)
+rf_model = load_model(data_file)
 
 orb_daily["date"] = pd.to_datetime(orb_daily["date"])
 filtered_orb_daily = orb_daily.copy()
@@ -67,7 +74,6 @@ with col7:
 
 st.subheader("Machine Learning Prediction")
 st.write("Enter the current ORB market conditions to estimate if the trade will reach the profit target before the stop loss")
-orb_daily = filtered_orb_daily.copy()
 #Create user input for ORB Range, volume, direction, day of week, and ATR
 orb_range_input = st.number_input("ORB Range (Points)", min_value=0.0, value=50.0, step=0.5)
 orb_volume_input = st.number_input("ORB Volume", min_value=0, value=10000, step=100)
