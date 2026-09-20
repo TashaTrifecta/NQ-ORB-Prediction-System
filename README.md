@@ -446,3 +446,15 @@ own trading decisions.
 
 
 ## 16. Security, Monitoring, and Maintenance
+        Security
+The NQ Futures ORB Price Action System was designed as a local analytical decision support system application. The application does not collect or store personal identifiable information, user credentials, brokerage account information, or account financial information. It aqlso does not connect to a brokerage or execute trades.
+User inputs are limited to predefined market variables used by the machine learning model. Dropdown menus restrict categorical inputs such as ORB direction and day of the week, while numerical inputs restrict values to appropriate numeric data types.
+
+        Monitoring
+The application can be monitored by reviewing model and application information, including the model type, dataset period, training and testing record counts, and testing accuracy. Historical statistics and visualizations also provide a method for reviewing the processed ORB data and identifying unexpected results.
+Application functionality can be monitored by testing the historical filters, machine learning inputs, prediction output, probability values, summary statistics, and Plotly visualizations.
+
+        Maintenance
+Application maintenance includes periodically reviewing Python and third-party library versions for compatibility and security updates. The pinned dependencies in `requirements.txt` can be updated after new versions have been tested with the application.
+If additional historical NQ futures data becomes available, the dataset can be updated and the Random Forest model can be retrained and reevaluated. Model performance should be reviewed using accuracy, precision, recall, F1-score, and the confusion matrix before an updated model is deployed.
+Future maintenance may also include correcting defects, improving data-processing logic, updating documentation, and testing the application after changes to the source code or dependencies.

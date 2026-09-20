@@ -5,10 +5,10 @@ from pathlib import Path
 
 project_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(project_root))
-sys.path.append(str(project_root / "src"))
 
-from data_processing import data_processing
-from machine_learning import machine_learning
+
+from src.data_processing import data_processing
+from src.machine_learning import machine_learning
 from visuals.charts import (create_weekday_chart,create_orb_histogram,create_heatmap,create_win_rate_chart)
 
 st.set_page_config(page_title='NQ ORB Price Action System', page_icon="📈", layout="wide")
@@ -91,12 +91,15 @@ day_encoded = {"Monday": 0, "Tuesday":1, "Wednesday":2, "Thursday":3, "Friday":4
 #Create Prediction Button
 prediction_input = pd.DataFrame([{"orb_range": orb_range_input, "orb_volume":orb_volume_input,"orb_direction":direction_encoded, "day_of_week": day_encoded,"atr_14":atr_input}])
 if st.button("Predict the Trade Outcome"):
-    prediction = rf_model.predict(prediction_input)[0]
-    probabilities = rf_model.predict_proba(prediction_input)[0]
-    probability_map = dict(zip(rf_model.classes_, probabilities))
-    win_probability = probability_map["WIN"]
-    loss_probability = probability_map["LOSS"]
-    st.write("Predicted Outcome:", prediction)
+    if orb_range_input <= 0 or atr_input <= 0:
+        st.warning("ORB Range and ATR(14) must be greater than zero")
+    else:
+        prediction = rf_model.predict(prediction_input)[0]
+        probabilities = rf_model.predict_proba(prediction_input)[0]
+        probability_map = dict(zip(rf_model.classes_, probabilities))
+        win_probability = probability_map["WIN"]
+        loss_probability = probability_map["LOSS"]
+        st.write("Predicted Outcome:", prediction)
 
     col1, col2 = st.columns(2)
     with col1:
@@ -107,6 +110,17 @@ if st.button("Predict the Trade Outcome"):
         "This prediction is based on historical ORB patterns and is intended "
         "for decision support only. It does not guarantee future trading outcomes."
     )
+
+# Display model information for monitoring and documentation
+with st.expander("System & Model Information"):
+    st.write("Model Status: Loaded")
+    st.write("Model Type: Random Forest Classification")
+    st.write("Dataset Period: 2022–2025")
+    st.write("Prediction Target: WIN / LOSS")
+    st.write("Features Used: 5")
+    st.write("Training Records: 552")
+    st.write("Testing Records: 139")
+    st.write("Testing Accuracy: 53.2%")
 
 #Show Visualizations created in charts.py
 st.subheader("ORB Visual Analysis")
