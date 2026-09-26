@@ -41,7 +41,7 @@ def data_processing(filename):
     orb_daily.loc[orb_daily["orb_close"] > orb_daily["orb_open"],"orb_direction"] = "BULLISH"
     orb_daily.loc[orb_daily["orb_close"] < orb_daily["orb_open"],"orb_direction"] = "BEARISH"
 
-    #Create a Merge between the Daily ORB columns and Post ORB to compare the Pst orb High/Low agaisnt the 5M ORB High/Low
+    #Create a Merge between the Daily ORB columns and Post ORB to compare the Post orb High/Low agaisnt the 5M ORB High/Low
     post_orb_merged = trade_window.merge(orb_daily[["date", "orb_high", "orb_low", "orb_range", "orb_direction"]], on="date", how="left")
     post_orb_merged["high_break"] = (post_orb_merged["high"] >= post_orb_merged["orb_high"])
     post_orb_merged["low_break"] = (post_orb_merged["low"] <= post_orb_merged["orb_low"])
@@ -64,7 +64,7 @@ def data_processing(filename):
     break_times.loc[break_times["first_high_break"].notna() & break_times["first_low_break"].notna() &(break_times["first_high_break"] == break_times["first_low_break"]),"first_break"] = "AMBIGUOUS" #Both broke during the same 1-minute candle
     break_times = break_times.reset_index() #turns the index into a normal column
 
-    #Merge Daily ORB with the Outcome of the first break times and ORB Features
+    #Merge Daily ORB with the Outcome of the first break times
     orb_daily_merged = orb_daily.merge(break_times[["date", "first_break"]], on="date", how="left")
     post_orb_merged = post_orb_merged.merge(break_times[["date", "first_break"]],on="date",how="left")
     # print(orb_daily_merged[["date", "orb_direction", "orb_range", "orb_volume", "first_break"]].head(10))

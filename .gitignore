@@ -8,8 +8,5 @@ __pycache__/
 #Large datasets
 data/raw/*.csv
 
-#Processed data
-data/processed/
-
 #IDE files
 .idea/
