@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project was created with Python and Streamilt. It is an application that analyzes historical Nasdaq-100 (NQ) futures Opening Range Breakout (ORB) trades.
+This project was created with Python and Streamlit. It is an application that analyzes historical Nasdaq-100 (NQ) futures Opening Range Breakout (ORB) trades.
 
 The application uses a historical one-minute NQ futures dataset to calculate ORB statistics, display interactive charts, and train a Random Forest Classifier model to predict whether a trade will result in a Win or Loss.
 This system is designed as a decision support tool (DST) as it will not execute trades or connect to a brokerage account.
