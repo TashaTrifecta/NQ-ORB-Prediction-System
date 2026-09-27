@@ -32,8 +32,8 @@ The Opening Range is created from the first five one-minute candles of the New Y
 Risk to Reward Ratio: 2:1
 Risking 0.5x of the ORB range to make 1.0x the ORB Range
 
---Take Profit (TP): 1.0x ORB Range
---Stop Loss (SL): 0.5x OrB Range
+-- Take Profit (TP): 1.0x ORB Range
+-- Stop Loss (SL): 0.5x ORB Range
 
 Historical trades are classified as Win, Loss, or Ambiguous
 
@@ -43,7 +43,7 @@ Historical trades are classified as Win, Loss, or Ambiguous
 The project uses a Random Forest classification model imported from the scikit-learn library.
 This model is trained using five model features, they are:
 
--- Orb range
+-- ORB range
 -- ORB Volume
 -- ORB Direction
 -- Day of Week
