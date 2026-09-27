@@ -88,7 +88,7 @@ User Guide(Local Setup)
 4. Install the required libraries using the requirements.txt file: python -m pip install -r requirements.txt
 5. Confirm that Dataset_NQ_1min_2022_2025.csv is located in the data/raw folder
 6. Start the application: python -m streamlit run app/app.py
-7. Open the local Streamit address displayed in the terminal if the browser does not open automatically
+7. Open the local Streamlit address displayed in the terminal if the browser does not open automatically
 8. Select a Month and Year from the filters on the left to analyze the historical period
 9. Review the Historical ORB Summary for the selected period
 10. Enter the current ORB Range, ORB Volume, ORB Direction, Day of Week, and ATR(14) in the Machine Learning Prediction section
